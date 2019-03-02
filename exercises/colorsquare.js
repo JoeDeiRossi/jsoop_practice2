@@ -14,7 +14,13 @@ class ColorSquare{
 		you'll need to bind the handleClick method to this object:
 			this.handleClick = this.handleClick.bind(this)
 	*/
-	constructor( ){
+	constructor(availableColors, colorIndex, domElementClass){
+		this.availableColors = availableColors;
+		this.colorIndex = colorIndex;
+		this.domElementClass = domElementClass;
+		this.rightNeighbor = null;
+		this.handleClick = this.handleClick.bind(this);
+		this.renderedElement;
 	}
 	/*setter function for the property neighbor
 	new, somewhat limited support: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/set
@@ -27,7 +33,12 @@ class ColorSquare{
 		if it is the right constructor, set the neightbor
 	*/
 	set neighbor(neighborObject){
-
+		if (neighborObject.constructor === this.constructor) {
+			this.rightNeighbor = neighborObject;
+			return true;
+		} else {
+			return false;
+		}
 	}
 	/* getter function for the property neighbor
 	new, somewhat limited support: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/get
@@ -37,7 +48,7 @@ class ColorSquare{
 		this object's property of the neighbor to the right
 	*/
 	get neighbor(){
-
+		return this.rightNeighbor;
 	}
 	/*
 	click handler for this dom element
@@ -54,7 +65,15 @@ class ColorSquare{
 			make sure the rightNeighbor is something!  the rightmost element won't have a neighbor
 		*/
 	handleClick(){
-
+		if (this.colorIndex === this.availableColors.length - 1) {
+			this.colorIndex = 0;
+		} else {
+			this.colorIndex++;
+		}
+		this.renderedElement.css('background-color', this.availableColors[this.colorIndex]);
+		if (this.rightNeighbor) {
+			this.rightNeighbor.handleClick();
+		}
 	}
 	/*
 	change the color of the current element
@@ -65,8 +84,8 @@ class ColorSquare{
 	notes:
 		changes the current object's dom element's backgound color to the argument color
 	*/
-	changeColor(  ){
-
+	changeColor(newColor){
+		this.renderedElement.css('background-color', newColor);
 	}
 	/*
 	render / generate the dom element for the current object 
@@ -79,9 +98,10 @@ class ColorSquare{
 		add a class to the element based on the class stored from the constructor
 		add a click handler that calls the handleClick method of this object
 		add the background color of the dom element to the currently chosen color (based on the passed in index of the constructor)
-		return the dom element that was generated. 
+		return the dom element that was generated.
 	*/
 	render(){
-
+		this.renderedElement = $('<div>').addClass(this.domElementClass).on('click', this.handleClick).css('background-color', this.availableColors[this.colorIndex]);
+		return this.renderedElement;
 	}
 }
